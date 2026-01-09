@@ -1,132 +1,153 @@
-if (window.screen.width <= 1130) {
-    function removeall() {
-        $(".cir_border").css("border", "none");
-    }
-    $("#sec").on("click", function () {
-        removeall();
-        $("#sec").css("border", "2px solid whitesmoke");
-        $("#sec").css("border-radius", "20px");
-    });
-    $("#pri").on("click", function () {
-        removeall();
-        $("#pri").css("border", "2px solid whitesmoke");
-        $("#pri").css("border-radius", "20px");
-    });
-    $("#tri").on("click", function () {
-        removeall();
-        $("#tri").css("border", "2px solid whitesmoke");
-        $("#tri").css("border-radius", "20px");
-    });
-    $("#quad").on("click", function () {
-        removeall();
-        $("#quad").css("border", "2px solid whitesmoke");
-        $("#quad").css("border-radius", "20px");
-    });
-    $("#quint").on("click", function () {
-        removeall();
-        $("#quint").css("border", "2px solid whitesmoke");
-        $("#quint").css("border-radius", "20px");
-    });
-    $("#hex").on("click", function () {
-        removeall();
-        $("#hex").css("border", "2px solid whitesmoke");
-        $("#hex").css("border-radius", "20px");
-    });
-    $("#hept").on("click", function () {
-        removeall();
-        $("#hept").css("border", "2px solid whitesmoke");
-        $("#hept").css("border-radius", "20px");
-    });
+const nav = document.querySelector(".navbar");
+const navLinks = document.querySelector(".nav-links");
+const menuBtn = document.querySelector(".menu-btn");
+const backToTop = document.getElementById("upbtn");
+const chatPanel = document.getElementById("chat-panel");
+const chatOpen = document.getElementById("chat-open");
+const chatOpenContact = document.getElementById("chat-open-contact");
+const chatClose = document.getElementById("chat-close");
+const chatForm = document.getElementById("chat-form");
+const chatInput = document.getElementById("chat-input");
+const chatMessages = document.getElementById("chat-messages");
+const sectionIds = ["home", "events", "explore", "tours", "about", "contact"];
+
+function closeMenu() {
+    navLinks.classList.remove("is-open");
+    menuBtn.classList.remove("is-open");
+    document.body.classList.remove("menu-open");
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuBtn.setAttribute("aria-label", "Open menu");
 }
 
-$("#about").on("mouseover", function () {
-    introAboutLogoTransition();
-});
-
-$("input").on("change", function () {
-    $("body").toggleClass("blue");
-});
-
-// Light/Dark toggle
-const checkbox = document.getElementById("checkbox");
-
-function introAboutLogoTransition() {
-    $("#about-quad").css("top", "70%");
-    $("#about-quad").css("opacity", "1");
+function toggleMenu() {
+    const isOpen = navLinks.classList.toggle("is-open");
+    menuBtn.classList.toggle("is-open", isOpen);
+    document.body.classList.toggle("menu-open", isOpen);
+    menuBtn.setAttribute("aria-expanded", String(isOpen));
+    menuBtn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
 }
 
-function checkDarkMode() {
-    if (
-        localStorage.getItem("tourism_website_darkmode") !== null &&
-        localStorage.getItem("tourism_website_darkmode") === "true"
-    ) {
-        document.body.classList.add("dark");
-        checkbox.checked = true;
-    }
-}
-checkDarkMode();
-
-checkbox.addEventListener("change", () => {
-    document.body.classList.toggle("dark");
-    document.body.classList.contains("dark")
-        ? localStorage.setItem("tourism_website_darkmode", true)
-        : localStorage.setItem("tourism_website_darkmode", false);
-});
-
-// scroll button
-
-let mybutton = document.getElementById("upbtn");
-
-window.onscroll = function () {
-    scrollFunction();
-};
-
-function scrollFunction() {
-    if (
-        document.body.scrollTop > 20 ||
-        document.documentElement.scrollTop > 20
-    ) {
-        mybutton.style.display = "block";
-    } else {
-        mybutton.style.display = "none";
-    }
-}
-function topFunction() {
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-}
-
-// Update Navbar While Scrolling
 function updateNav() {
-    const sections = document.querySelectorAll("section");
-    const navLinks = document.querySelectorAll(".nav-links li a");
+    const offset = (nav ? nav.offsetHeight : 72) + 24;
+    let current = "home";
 
-    sections.forEach((section, index) => {
-        const rect = section.getBoundingClientRect();
-
-        if (window.screen.width <= 425) {
-            if (rect.top <= 1300) {
-                navLinks.forEach((navLink) => {
-                    navLink.classList.remove("active");
-                });
-                navLinks[index].classList.add("active");
-            }
-        } else if (425 <= window.screen.width <= 768) {
-            if (rect.top <= 1250) {
-                navLinks.forEach((navLink) => {
-                    navLink.classList.remove("active");
-                });
-                navLinks[index].classList.add("active");
-            }
-        } else {
-            if (rect.top <= 1000) {
-                navLinks.forEach((navLink) => {
-                    navLink.classList.remove("active");
-                });
-                navLinks[index].classList.add("active");
-            }
+    sectionIds.forEach((id) => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        if (section.getBoundingClientRect().top - offset <= 0) {
+            current = id;
         }
     });
+
+    navLinks.querySelectorAll("a").forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
+    });
 }
 
-window.addEventListener("scroll", updateNav);
+function onScroll() {
+    if (window.scrollY > 240) {
+        backToTop.classList.add("is-visible");
+    } else {
+        backToTop.classList.remove("is-visible");
+    }
+    updateNav();
+}
+
+function openChat() {
+    chatPanel.hidden = false;
+    chatOpen.setAttribute("aria-expanded", "true");
+    closeMenu();
+    window.setTimeout(() => chatInput.focus(), 50);
+}
+
+function closeChat() {
+    chatPanel.hidden = true;
+    chatOpen.setAttribute("aria-expanded", "false");
+}
+
+function toggleChat() {
+    if (chatPanel.hidden) {
+        openChat();
+    } else {
+        closeChat();
+    }
+}
+
+function addBubble(text, from) {
+    const bubble = document.createElement("p");
+    bubble.className = `chat-bubble chat-bubble--${from}`;
+    bubble.textContent = text;
+    chatMessages.appendChild(bubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function officialReply(message) {
+    const text = message.toLowerCase();
+    let reply =
+        "I can help with upcoming events, 2026 tours, or reaching the desk. What would you like to know?";
+
+    if (/(hello|hi|hey)\b/.test(text)) {
+        reply =
+            "Hello. I’m Amara with Tourismania. Tell me if you’re looking at a trek, a walk, or a coastal trip.";
+    } else if (/event|everest|walk|andaman|trek/.test(text)) {
+        reply =
+            "Our upcoming events are the Everest camp trek, walking holidays, and Andaman Beaches. I can help you choose one.";
+    } else if (/tour|itinerary|date|2026/.test(text)) {
+        reply =
+            "Upcoming tours for 2026: Port of Spain on 28 Jan, Gasparee Caves on 14 Mar, and the Trinidad North Coast on 5 May.";
+    } else if (/email|contact|mail|reach|touch/.test(text)) {
+        reply =
+            "You can write to us at tourismania@gmail.com, or keep chatting here and I’ll assist.";
+    } else if (/book|price|cost|plan|journey/.test(text)) {
+        reply =
+            "Share the trip you have in mind and your travel month. You can also use the contact form and I’ll follow up.";
+    }
+
+    window.setTimeout(() => addBubble(reply, "official"), 450);
+}
+
+function sendChat(message) {
+    const value = message.trim();
+    if (!value) return;
+    addBubble(value, "guest");
+    chatInput.value = "";
+    officialReply(value);
+}
+
+menuBtn.addEventListener("click", toggleMenu);
+
+navLinks.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+});
+
+chatOpen.addEventListener("click", toggleChat);
+chatOpenContact.addEventListener("click", openChat);
+chatClose.addEventListener("click", closeChat);
+
+chatForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    sendChat(chatInput.value);
+});
+
+document.querySelectorAll("[data-chat-prompt]").forEach((button) => {
+    button.addEventListener("click", () => {
+        sendChat(button.getAttribute("data-chat-prompt"));
+    });
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !chatPanel.hidden) {
+        closeChat();
+    }
+});
+
+backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+window.addEventListener("scroll", onScroll, { passive: true });
+window.addEventListener("resize", () => {
+    if (window.innerWidth > 1100) closeMenu();
+});
+
+updateNav();
