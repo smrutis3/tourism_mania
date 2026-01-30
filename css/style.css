@@ -16,19 +16,6 @@
   color-scheme: light;
 }
 
-html.dark {
-  --color-cream: #161410;
-  --color-sand: #221e18;
-  --color-paper: #1d1a16;
-  --color-ink: #f3ece2;
-  --color-ink-muted: #b5aea3;
-  --color-terracotta: #d4784e;
-  --color-terracotta-dark: #e8b08a;
-  --color-rule: rgba(243, 236, 226, 0.16);
-  --color-hero-text: #f6f1e8;
-  color-scheme: dark;
-}
-
 *,
 *::before,
 *::after {
